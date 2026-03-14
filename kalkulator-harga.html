@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator Harga Jual</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F5F4F0;
+      --card: #FFFFFF;
+      --border: rgba(0,0,0,0.1);
+      --border-md: rgba(0,0,0,0.18);
+      --text: #1A1A1A;
+      --text-muted: #666;
+      --text-hint: #999;
+      --accent: #E65100;
+      --accent2: #FF8F00;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 5rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #FFF3E0;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .header h1 { font-size: 26px; font-weight: 700; line-height: 1.2; }
+    .header p { font-size: 14px; color: var(--text-muted); margin-top: 6px; }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      border: 0.5px solid var(--border);
+      padding: 1.5rem;
+      max-width: 520px;
+      margin: 0 auto 1rem;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-hint);
+      margin-bottom: 1rem;
+    }
+
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-prefix, .input-suffix {
+      position: absolute;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-hint);
+      pointer-events: none;
+    }
+    .input-prefix { left: 12px; }
+    .input-suffix { right: 12px; }
+
+    input[type="number"] {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--border-md);
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--card);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(230,81,0,0.1);
+    }
+    .has-prefix input[type="number"] { padding-left: 40px; padding-right: 12px; }
+    .has-suffix input[type="number"] { padding-left: 12px; padding-right: 36px; }
+
+    .slider-row { display: flex; align-items: center; gap: 10px; }
+    .slider-row input[type="range"] {
+      flex: 1;
+      height: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .slider-val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 42px;
+      text-align: right;
+    }
+
+    .ppn-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #F9F8F5;
+      border: 0.5px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .ppn-label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    .ppn-toggle { display: flex; align-items: center; gap: 8px; }
+    .toggle {
+      position: relative; width: 38px; height: 22px;
+      background: #ccc;
+      border-radius: 11px; cursor: pointer; transition: background 0.2s;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle-knob {
+      position: absolute; top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      background: white; border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle.on .toggle-knob { transform: translateX(16px); }
+    .ppn-val { font-size: 13px; font-weight: 700; color: var(--text-muted); }
+
+    .divider { height: 0.5px; background: var(--border); margin: 1.25rem 0; }
+
+    .result-card {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 16px;
+      padding: 1.5rem;
+      max-width: 520px;
+      margin: 0 auto 1rem;
+      color: white;
+      transition: opacity 0.3s;
+    }
+    .result-main {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .result-label { font-size: 11px; font-weight: 600; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.07em; }
+    .result-price { font-size: 28px; font-weight: 700; line-height: 1; margin-top: 6px; }
+
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .breakdown-item {
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .b-label { font-size: 11px; opacity: 0.75; font-weight: 600; }
+    .b-val { font-size: 15px; font-weight: 700; margin-top: 2px; }
+    .b-pct { font-size: 11px; opacity: 0.65; }
+
+    .margin-bar { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2); }
+    .margin-bar-label { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-bottom: 6px; }
+    .bar-track { height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; background: white; border-radius: 3px; transition: width 0.4s ease; }
+
+    .warning {
+      background: #FFF3E0;
+      border: 1px solid #FFB300;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--accent);
+      margin-top: 0.5rem;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-hint);
+      margin-top: 2.5rem;
+    }
+
+    @media (max-width: 400px) {
+      .result-price { font-size: 22px; }
+      .breakdown-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge">Kalkulator Harga Jual</div>
+    <h1>Hitung Harga Jualmu 🧮</h1>
+    <p>Masukkan modal & biaya, harga jual terhitung otomatis</p>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Input Biaya</div>
+
+    <div class="field">
+      <label>Harga Modal / HPP</label>
+      <div class="input-wrap has-prefix">
+        <span class="input-prefix">Rp</span>
+        <input type="number" id="modal" placeholder="0" value="50000" oninput="calc()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Biaya Aplikasi (Grab, GoFood, dll.)</label>
+      <div class="slider-row">
+        <input type="range" id="app-fee" min="0" max="40" step="1" value="20" oninput="onAppFee(this.value)">
+        <span class="slider-val" id="app-fee-val">20%</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Target Keuntungan / Profit</label>
+      <div class="slider-row">
+        <input type="range" id="profit" min="0" max="200" step="1" value="30" oninput="onProfit(this.value)">
+        <span class="slider-val" id="profit-val">30%</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">Pajak</div>
+
+    <div class="ppn-row">
+      <span class="ppn-label">PPN 11%</span>
+      <div class="ppn-toggle">
+        <div class="toggle on" id="ppn-toggle" onclick="togglePPN()">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="ppn-val" id="ppn-label-val">11%</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Atau atur PPN manual</label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="ppn-custom" placeholder="11" value="11" min="0" max="100" oninput="onPPNCustom(this.value)">
+        <span class="input-suffix">%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-card">
+    <div class="result-main">
+      <div>
+        <div class="result-label">Harga Jual Minimal</div>
+        <div class="result-price" id="harga-jual">Rp 0</div>
+      </div>
+      <div style="text-align:right">
+        <div class="result-label">Profit Bersih</div>
+        <div style="font-size:18px;font-weight:700;margin-top:6px" id="profit-bersih">Rp 0</div>
+      </div>
+    </div>
+
+    <div class="breakdown-grid">
+      <div class="breakdown-item">
+        <div class="b-label">Modal / HPP</div>
+        <div class="b-val" id="r-modal">Rp 0</div>
+        <div class="b-pct" id="r-modal-pct">0%</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="b-label">Biaya Aplikasi</div>
+        <div class="b-val" id="r-app">Rp 0</div>
+        <div class="b-pct" id="r-app-pct">0%</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="b-label">PPN</div>
+        <div class="b-val" id="r-ppn">Rp 0</div>
+        <div class="b-pct" id="r-ppn-pct">0%</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="b-label">Keuntungan</div>
+        <div class="b-val" id="r-profit">Rp 0</div>
+        <div class="b-pct" id="r-profit-pct">0%</div>
+      </div>
+    </div>
+
+    <div class="margin-bar">
+      <div class="margin-bar-label">
+        <span>Komposisi Harga Jual</span>
+        <span>Modal · Biaya · Untung</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="bar-fill" style="width:60%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="warning-box" class="warning">
+    ⚠️ Biaya aplikasi + PPN melebihi 100% — harga tidak bisa dihitung. Kurangi salah satu.
+  </div>
+
+  <div class="footer">@ FN, 2026</div>
+
+  <script>
+    let ppnEnabled = true;
+    let ppnRate = 11;
+    let appFeeRate = 20;
+    let profitRate = 30;
+
+    function fmt(n) {
+      return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+    }
+    function pct(part, total) {
+      if (!total) return '0%';
+      return (part / total * 100).toFixed(1) + '%';
+    }
+
+    function onAppFee(v) {
+      appFeeRate = +v;
+      document.getElementById('app-fee-val').textContent = v + '%';
+      calc();
+    }
+    function onProfit(v) {
+      profitRate = +v;
+      document.getElementById('profit-val').textContent = v + '%';
+      calc();
+    }
+    function onPPNCustom(v) {
+      ppnRate = Math.max(0, Math.min(100, +v || 0));
+      document.getElementById('ppn-label-val').textContent = ppnRate + '%';
+      calc();
+    }
+    function togglePPN() {
+      ppnEnabled = !ppnEnabled;
+      document.getElementById('ppn-toggle').classList.toggle('on', ppnEnabled);
+      document.getElementById('ppn-label-val').textContent = ppnEnabled ? ppnRate + '%' : '0%';
+      calc();
+    }
+
+    function calc() {
+      const modal = parseFloat(document.getElementById('modal').value) || 0;
+      const appF = appFeeRate / 100;
+      const ppn = ppnEnabled ? ppnRate / 100 : 0;
+      const profit = profitRate / 100;
+      const denom = 1 - appF - ppn;
+
+      const warn = document.getElementById('warning-box');
+      const rc = document.getElementById('result-card');
+
+      if (denom <= 0) {
+        warn.style.display = 'block';
+        rc.style.opacity = '0.4';
+        return;
+      }
+      warn.style.display = 'none';
+      rc.style.opacity = '1';
+
+      const S = modal * (1 + profit) / denom;
+      const appAmt = appF * S;
+      const ppnAmt = ppn * S;
+      const profitAmt = profit * modal;
+
+      document.getElementById('harga-jual').textContent = fmt(S);
+      document.getElementById('profit-bersih').textContent = fmt(profitAmt);
+      document.getElementById('r-modal').textContent = fmt(modal);
+      document.getElementById('r-modal-pct').textContent = pct(modal, S);
+      document.getElementById('r-app').textContent = fmt(appAmt);
+      document.getElementById('r-app-pct').textContent = pct(appAmt, S);
+      document.getElementById('r-ppn').textContent = fmt(ppnAmt);
+      document.getElementById('r-ppn-pct').textContent = pct(ppnAmt, S);
+      document.getElementById('r-profit').textContent = fmt(profitAmt);
+      document.getElementById('r-profit-pct').textContent = pct(profitAmt, S);
+
+      const modalShare = S > 0 ? (modal / S) * 100 : 0;
+      document.getElementById('bar-fill').style.width = Math.min(100, modalShare).toFixed(1) + '%';
+    }
+
+    calc();
+  </script>
+</body>
+</html>
